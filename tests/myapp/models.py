@@ -358,3 +358,10 @@ class NullableDescOrderedInsertionModel(MPTTModel):
 
     def __str__(self):
         return self.name
+
+
+class UniqueTogetherModel( MPTTModel ):
+    class Meta:
+        unique_together = (('parent','code',),)
+    parent = TreeForeignKey('self', null=True)
+    code = models.CharField(max_length=10)
