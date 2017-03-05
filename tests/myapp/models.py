@@ -340,3 +340,16 @@ class UniqueTogetherModel( MPTTModel ):
         unique_together = (('parent','code',),)
     parent = TreeForeignKey('self', null=True)
     code = models.CharField(max_length=10)
+
+
+class NullableOrderedInsertionModel(MPTTModel):
+    name = models.CharField(max_length=50, null=True)
+    parent = TreeForeignKey(
+        'self', null=True, blank=True, related_name='children',
+        on_delete=models.CASCADE)
+
+    class MPTTMeta:
+        order_insertion_by = ['name']
+
+    def __str__(self):
+        return self.name

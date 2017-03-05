@@ -37,7 +37,7 @@ from myapp.models import (
     Category, Item, Genre, CustomPKName, SingleProxyModel, DoubleProxyModel,
     ConcreteModel, OrderedInsertion, AutoNowDateFieldModel, Person,
     CustomTreeQueryset, Node, CustomTreeManager, Book, UUIDNode, Student,
-    MultipleManagerModel, UniqueTogetherModel)
+    MultipleManagerModel, UniqueTogetherModel, NullableOrderedInsertionModel)
 
 
 def get_tree_details(nodes):
@@ -2335,4 +2335,18 @@ class MovingNodeWithUniqueConstraint(TreeTestCase):
             3 1 1 1 2 3
             2 - 2 0 1 4
             4 2 2 1 2 3
+        """)
+
+
+class NullableOrderedInsertion(TreeTestCase):
+    def test_nullable_ordered_insertion(self):
+
+        genreA = NullableOrderedInsertionModel.objects.create(name='A', parent=None)
+        genreA1 = NullableOrderedInsertionModel.objects.create(name='A1', parent=genreA)
+        genreAnone = NullableOrderedInsertionModel.objects.create(name=None, parent=genreA)
+
+        self.assertTreeEqual(NullableOrderedInsertionModel.objects.all(), """
+            1 - 1 0 1 6
+            3 1 1 1 2 3
+            2 1 1 1 4 5
         """)
