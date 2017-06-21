@@ -1021,6 +1021,15 @@ class MPTTModel(six.with_metaclass(MPTTModelBase, models.Model)):
         be passed directly to the django's ``Model.delete``.
 
         ``delete`` will not return anything. """
+        try:
+            # We have to make sure we use database's mptt values, since they
+            # could have changed between the moment the instance was retrieved and
+            # the moment it is deleted.
+            # This happens for example if you delete several nodes at once from a queryset.
+            self.refresh_from_db()
+        except self.__class__.DoesNotExist as e:
+            # In case the object was already deleted, we don't want to throw an exception
+            pass
         tree_width = (self._mpttfield('right') -
                       self._mpttfield('left') + 1)
         target_right = self._mpttfield('right')
